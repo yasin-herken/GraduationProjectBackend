@@ -1,0 +1,22 @@
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+spring:
+  datasource:
+    password: "postgres"
+    url: "jdbc:postgresql://localhost:5432/graduation_project"
+    username: "postgres"
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL81Dialect
+        format_sql: true
+    show_sql: true
+ecommerce:
+  app:
+    jwtCookieName: graduationproject
+    jwtSecret: "jwt_secret"
+    jwtExpirationMs: 86400000
