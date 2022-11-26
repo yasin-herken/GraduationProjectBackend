@@ -29,5 +29,5 @@ jobs:
       run: mvn clean install -DskipTests
 
     - name: Execute Jar File
-      run: sudo kill -9 `sudo lsof -t -i:80` & sudo java -jar /home/ubuntu/graduationProject/graduationProject/GraduationProjectBackend/GraduationProjectBackend/target/backend-0.0.1-SNAPSHOT.jar
+      run: sudo kill -9 `sudo lsof -t -i:80` & sudo java -jar /home/ubuntu/graduationProject/graduationProject/GraduationProjectBackend/GraduationProjectBackend/target/backend-0.0.1-SNAPSHOT.jar &
 
