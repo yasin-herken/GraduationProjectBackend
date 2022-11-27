@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloWorld {
     @GetMapping
     String getMaps(){
-
+        System.out.println("here");
         return "sada";
     }
 }
