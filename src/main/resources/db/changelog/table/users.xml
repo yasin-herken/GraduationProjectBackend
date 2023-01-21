@@ -8,7 +8,7 @@
       http://www.liquibase.org/xml/ns/pro
       http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.0.xsd">
     <property name="clob.type" value="clob" dbms="postgresql"/>
-    <changeSet author="yasin"  id="1">
+    <changeSet author="yasin"  id="1" context="sql">
         <sql>
             create table roles
             (

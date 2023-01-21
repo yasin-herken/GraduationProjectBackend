@@ -9,15 +9,15 @@ import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Table(name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "email")
         })
+@Entity
 public class CustomUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Long id;
 
     @NotBlank

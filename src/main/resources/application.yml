@@ -9,16 +9,17 @@ spring:
     url: "jdbc:postgresql://localhost:5432/graduation_project"
     username: "newuser"
   jpa:
-    hibernate:
-      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL9Dialect
         format_sql: true
     show_sql: true
+    hibernate:
+      ddl-auto: update
   liquibase:
     enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.xml
+    change-log: "classpath:db/changelog/db.changelog-master.xml"
+    contexts: "sql,data"
 
 ecommerce:
   app:
