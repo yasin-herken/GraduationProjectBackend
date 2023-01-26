@@ -1,11 +1,9 @@
 package graduationproject.backend.Product.entity;
 
 import graduationproject.backend.Category.entity.Category;
+import graduationproject.backend.Common.entity.AuditableDate;
 import graduationproject.backend.User.entity.Seller;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -16,7 +14,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+public class Product extends AuditableDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,23 +28,29 @@ public class Product {
     @OneToOne
     private Category category;
 
-    @ElementCollection // 1
-    @CollectionTable(name = "Img_list", joinColumns = @JoinColumn(name = "id")) // 2
-    @Column(name = "img") // 3
-    private Set<String> images;
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Set<Img> images;
 
-    @Column(name ="descriptipn")
+    @Column(name = "descriptipn")
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_details_id")
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
     private Set<ProductDetail> productDetails;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinColumn(name="seller_id", referencedColumnName = "ID")
-    private Seller sellerId;
+    public Product(String title, Price price, Category category, Set<Img> images, String description, Set<ProductDetail> productDetails) {
+        this.title = title;
+        this.price = price;
+        this.category = category;
+        this.images = images;
+        this.description = description;
+        this.productDetails = productDetails;
+    }
 
-    public void update(Product product){
+
+    public void update(Product product) {
+        this.category = product.getCategory();
         this.images = product.getImages();
         this.description = product.getDescription();
         this.productDetails = product.getProductDetails();

@@ -4,16 +4,16 @@
 
     <changeSet id="2" author="yasin" context="data">
         <insert tableName="roles">
-            <column name="id" valueNumeric="1" />
-            <column name="name" value="ROLE_ADMIN" />
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="ROLE_ADMIN"/>
         </insert>
         <insert tableName="roles">
-            <column name="id" valueNumeric="2" />
-            <column name="name" value="ROLE_MODERATOR" />
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="ROLE_SELLER"/>
         </insert>
         <insert tableName="roles">
-            <column name="id" valueNumeric="3" />
-            <column name="name" value="ROLE_USER" />
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="ROLE_USER"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

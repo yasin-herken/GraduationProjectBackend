@@ -15,7 +15,7 @@ public class UserInfoResponse {
 
     private List<String> roles;
 
-    public UserInfoResponse(String accessToken,Long id, String username, String email, List<String> roles) {
+    public UserInfoResponse(String accessToken, Long id, String username, String email, List<String> roles) {
         this.id = id;
         this.token = accessToken;
         this.username = username;

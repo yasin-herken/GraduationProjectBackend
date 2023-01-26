@@ -19,13 +19,14 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getCategories(){
+    public ResponseEntity<List<Category>> getCategories() {
 
         List<Category> categories = categoryService.findAll();
         return ResponseEntity.ok(categories);
     }
+
     @GetMapping("/{categoryName}")
-    public ResponseEntity<Category> getCategory(@PathVariable String categoryName){
+    public ResponseEntity<Category> getCategory(@PathVariable String categoryName) {
 
         return ResponseEntity.ok(categoryService.findCategoryByName(categoryName));
     }

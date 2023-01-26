@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
-      http://www.liquibase.org/xml/ns/pro
-      http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.0.xsd">
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
     <property name="clob.type" value="clob" dbms="postgresql"/>
-    <changeSet author="yasin"  id="1" context="sql">
+    <changeSet author="yasin" id="1" context="sql">
         <sql>
             create table roles
             (
@@ -19,10 +16,10 @@
 
             create table users
             (
-                id bigserial,
-                username  varchar(255),
-                password  varchar(255),
-                email  varchar(255),
+                id       bigserial,
+                username varchar(255),
+                password varchar(255),
+                email    varchar(255),
                 PRIMARY KEY (id)
             );
 
@@ -30,9 +27,9 @@
             (
                 user_id bigserial,
                 role_id serial4,
-                primary key (user_id,role_id),
-                constraint fk_user_id foreign key (user_id) references users(id) on delete cascade,
-                constraint fk_role_id foreign key (role_id) references roles(id)
+                primary key (user_id, role_id),
+                constraint fk_user_id foreign key (user_id) references users (id) on delete cascade,
+                constraint fk_role_id foreign key (role_id) references roles (id)
             );
         </sql>
     </changeSet>

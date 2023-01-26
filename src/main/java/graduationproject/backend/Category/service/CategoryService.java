@@ -18,20 +18,20 @@ public class CategoryService {
     @Autowired
     private final CategoryRepository categoryRepository;
 
-    public List<Category> findAll(){
+    public List<Category> findAll() {
         return categoryRepository.findAll();
     }
 
     public Category findCategoryByName(String categoryName) {
         Category category = categoryRepository.findByName(categoryName).orElseThrow(
-                ()->new ResourceNotFoundException("Not found category by name " + categoryName)
+                () -> new ResourceNotFoundException("Not found category by name " + categoryName)
         );
         return category;
     }
 
     public ResponseEntity<Category> createCategory(String category) throws ResourceAlreadyExists {
         Optional<Category> categoryDb = categoryRepository.findByName(category);
-        if(categoryDb.isEmpty()){
+        if (categoryDb.isEmpty()) {
             Category newCategory = new Category();
             newCategory.setParentid(null);
             newCategory.setName(category);

@@ -17,7 +17,7 @@ import java.util.Set;
 @Entity
 public class CustomUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
@@ -47,6 +47,7 @@ public class CustomUser {
         this.email = email;
         this.password = password;
     }
+
     public Long getId() {
         return id;
     }

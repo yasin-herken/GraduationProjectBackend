@@ -23,7 +23,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(ResourceAlreadyExists.class)
-    public ResponseEntity<ErrorMessage> resourceAlreadyExists(ResourceAlreadyExists ex){
+    public ResponseEntity<ErrorMessage> resourceAlreadyExists(ResourceAlreadyExists ex) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.FORBIDDEN.value(),
                 new Date(),

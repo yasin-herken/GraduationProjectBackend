@@ -1,15 +1,15 @@
 package graduationproject.backend.Auth.controller;
 
-import graduationproject.backend.User.entity.CustomUser;
-import graduationproject.backend.Role.entity.ERole;
-import graduationproject.backend.Role.entity.Role;
 import graduationproject.backend.Auth.payload.request.LoginRequest;
 import graduationproject.backend.Auth.payload.request.SignupRequest;
-import graduationproject.backend.Common.payload.response.MessageResponse;
-import graduationproject.backend.User.payload.response.UserInfoResponse;
-import graduationproject.backend.Role.repository.RoleRepository;
-import graduationproject.backend.User.repository.UserRepository;
 import graduationproject.backend.Auth.security.jwt.JwtUtils;
+import graduationproject.backend.Common.payload.response.MessageResponse;
+import graduationproject.backend.Role.entity.ERole;
+import graduationproject.backend.Role.entity.Role;
+import graduationproject.backend.Role.repository.RoleRepository;
+import graduationproject.backend.User.entity.CustomUser;
+import graduationproject.backend.User.payload.response.UserInfoResponse;
+import graduationproject.backend.User.repository.UserRepository;
 import graduationproject.backend.User.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -103,7 +103,7 @@ public class AuthController {
 
                         break;
                     case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                        Role modRole = roleRepository.findByName(ERole.ROLE_SELLER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
 

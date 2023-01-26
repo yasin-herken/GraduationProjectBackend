@@ -20,11 +20,11 @@ public class RoleController {
     private final RoleRepository roleRepository;
 
     @PostMapping
-    public void addRoles(){
+    public void addRoles() {
 
         List<Role> roleList = new ArrayList<>();
         roleList.add(new Role(ERole.ROLE_ADMIN));
-        roleList.add(new Role(ERole.ROLE_MODERATOR));
+        roleList.add(new Role(ERole.ROLE_SELLER));
         roleList.add(new Role(ERole.ROLE_USER));
         roleRepository.saveAll(roleList);
     }
