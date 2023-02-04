@@ -1,27 +1,33 @@
 package graduationproject.backend.User.service;
 
 import graduationproject.backend.Admin.payload.request.SellerDTO;
+import graduationproject.backend.Auth.security.jwt.JwtUtils;
 import graduationproject.backend.Category.entity.Category;
 import graduationproject.backend.Category.repository.CategoryRepository;
 import graduationproject.backend.Exception.controller.ResourceNotFoundException;
+import graduationproject.backend.Page.payload.response.PageResponse;
 import graduationproject.backend.Product.entity.Img;
 import graduationproject.backend.Product.entity.Product;
 import graduationproject.backend.Product.payload.request.ProductDTO;
 import graduationproject.backend.Product.repository.ProductRepository;
 import graduationproject.backend.User.entity.CustomUser;
 import graduationproject.backend.User.entity.Seller;
+import graduationproject.backend.User.mapper.ProductMapper;
+import graduationproject.backend.User.payload.response.ProductResponse;
 import graduationproject.backend.User.repository.SellerRepository;
 import graduationproject.backend.User.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,11 +59,12 @@ public class SellerService {
     }
 
     @Transactional
-    public ResponseEntity<Product> addNewProduct(ProductDTO product) {
+    public ResponseEntity<?> addNewProduct(ProductDTO product) {
 
-        Seller seller = sellerRepository.findById(product.getSellerId()).orElseThrow(
-                () -> new UsernameNotFoundException("Seller not found with id: " + product.getSellerId())
-        );
+        Seller seller = getSeller();
+        if (seller == null)
+            throw new UsernameNotFoundException("Seller not found");
+
         seller.getProducts().stream().forEach(p -> {
             if (p.getTitle().equals(product.getTitle())) {
                 throw new RuntimeException("Product already exists");
@@ -73,43 +80,38 @@ public class SellerService {
         newProduct.setTitle(product.getTitle());
         newProduct.setPrice(product.getPrice());
         newProduct.setDescription(product.getDescription());
+        newProduct.setStock(product.getStock());
         newProduct.setImages(product.getImages().stream().map(img -> {
             Img newImg = new Img();
             newImg.setUrl(img);
             return newImg;
         }).collect(Collectors.toSet()));
-        try{
+        try {
             Product savedProduct = productRepository.save(newProduct);
             seller.add(savedProduct);
-            Seller savedSeller = sellerRepository.save(seller);
-            int size = savedSeller.getProducts().size();
-            return new ResponseEntity<>(savedSeller.getProducts().get(size-1), HttpStatus.CREATED);
-        } catch (Exception e){
+            sellerRepository.save(seller);
+            ProductResponse responseProduct = ProductMapper.INSTANCE.mapToProductResponse(savedProduct);
+            return new ResponseEntity<>(responseProduct, HttpStatus.CREATED);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getProducts(Long sellerId) {
-        Seller seller = sellerRepository.findById(sellerId).orElse(null);
+    public ResponseEntity<?> getProducts(Integer pageSize, String sortBy, String direction, Integer page) {
+        Seller seller = getSeller();
         if (seller == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(seller.getProducts(), HttpStatus.OK);
-    }
-
-    @Transactional(readOnly = true)
-    public ResponseEntity<?> getSellers() {
-        return ResponseEntity.ok(sellerRepository.findAll().stream().map(seller->{
-            SellerDTO sellerDTO = new SellerDTO();
-            sellerDTO.setId(seller.getId());
-            sellerDTO.setCompanyName(seller.getCompanyName());
-            sellerDTO.setAddress(seller.getAddress());
-            sellerDTO.setCity(seller.getCity());
-            sellerDTO.setPhone(seller.getPhone());
-            return sellerDTO;
-        }).collect(Collectors.toList()));
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC,sortBy));
+        int start = Math.min((int)pageable.getOffset(), seller.getProducts().size());
+        int end = Math.min((start + pageable.getPageSize()), seller.getProducts().size());
+        Page<Product> pageProducts = new PageImpl<>(seller.getProducts().subList(start,end), pageable, seller.getProducts().size());
+        PageResponse<Product> response = new PageResponse<>();
+        response.setData(pageProducts.getContent());
+        response.setTotalRecords(pageProducts.getTotalElements());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Transactional
@@ -124,11 +126,11 @@ public class SellerService {
         for (Field f : field) {
             f.setAccessible(true);
             try {
-                if(f.get(sellerDTO) == null)
+                if (f.get(sellerDTO) == null)
                     continue;
                 Field field1 = seller.getClass().getDeclaredField(f.getName());
                 field1.setAccessible(true);
-                field1.set(seller,f.get(sellerDTO));
+                field1.set(seller, f.get(sellerDTO));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (NoSuchFieldException e) {
@@ -143,13 +145,9 @@ public class SellerService {
         return new ResponseEntity<>(seller, HttpStatus.OK);
     }
 
-    @Transactional
-    public ResponseEntity<?> deleteSeller(Long id) {
-        Seller seller = sellerRepository.findById(id).orElse(null);
-        if (seller == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        sellerRepository.delete(seller);
-        return new ResponseEntity<>(HttpStatus.OK);
+    private Seller getSeller() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) auth.getPrincipal();
+        return sellerRepository.findByUser_Id(userPrincipal.getId()).orElse(null);
     }
 }

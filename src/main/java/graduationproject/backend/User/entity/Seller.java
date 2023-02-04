@@ -1,8 +1,11 @@
 package graduationproject.backend.User.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import graduationproject.backend.Common.entity.AuditableDate;
 import graduationproject.backend.Product.entity.Product;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Seller {
+public class Seller extends AuditableDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -36,7 +39,11 @@ public class Seller {
     @Column(name = "phone")
     private String phone;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "seller_id")
     private List<Product> products;
 

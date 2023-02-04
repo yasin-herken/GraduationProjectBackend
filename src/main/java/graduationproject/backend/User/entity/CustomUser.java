@@ -1,5 +1,6 @@
 package graduationproject.backend.User.entity;
 
+import graduationproject.backend.Common.entity.AuditableDate;
 import graduationproject.backend.Role.entity.Role;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.Set;
                 @UniqueConstraint(columnNames = "email")
         })
 @Entity
-public class CustomUser {
+public class CustomUser extends AuditableDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

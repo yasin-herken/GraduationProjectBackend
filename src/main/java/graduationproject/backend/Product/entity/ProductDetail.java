@@ -5,6 +5,8 @@ import graduationproject.backend.User.entity.Seller;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -22,8 +24,12 @@ public class ProductDetail {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "map_id")
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product_detail_id")
     private Set<DetailMap> nameMap;
 
     public ProductDetail() {
