@@ -1,7 +1,6 @@
 package graduationproject.backend.User.service;
 
 import graduationproject.backend.Admin.payload.request.SellerDTO;
-import graduationproject.backend.Auth.security.jwt.JwtUtils;
 import graduationproject.backend.Category.entity.Category;
 import graduationproject.backend.Category.repository.CategoryRepository;
 import graduationproject.backend.Exception.controller.ResourceNotFoundException;
@@ -104,10 +103,10 @@ public class SellerService {
         if (seller == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC,sortBy));
-        int start = Math.min((int)pageable.getOffset(), seller.getProducts().size());
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
+        int start = Math.min((int) pageable.getOffset(), seller.getProducts().size());
         int end = Math.min((start + pageable.getPageSize()), seller.getProducts().size());
-        Page<Product> pageProducts = new PageImpl<>(seller.getProducts().subList(start,end), pageable, seller.getProducts().size());
+        Page<Product> pageProducts = new PageImpl<>(seller.getProducts().subList(start, end), pageable, seller.getProducts().size());
         PageResponse<Product> response = new PageResponse<>();
         response.setData(pageProducts.getContent());
         response.setTotalRecords(pageProducts.getTotalElements());
@@ -145,9 +144,25 @@ public class SellerService {
         return new ResponseEntity<>(seller, HttpStatus.OK);
     }
 
+    @Transactional
+    public ResponseEntity<?> deleteProduct(Long id) {
+        Seller seller = getSeller();
+        if (seller == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        seller.getProducts().remove(product);
+        sellerRepository.save(seller);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     private Seller getSeller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userPrincipal = (UserDetailsImpl) auth.getPrincipal();
         return sellerRepository.findByUser_Id(userPrincipal.getId()).orElse(null);
     }
+
 }

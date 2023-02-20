@@ -31,4 +31,9 @@ public class SellerController {
         return sellerService.getProducts(pageSize,sortBy,direction,page);
     }
 
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id){
+        return sellerService.deleteProduct(id);
+    }
+
 }
