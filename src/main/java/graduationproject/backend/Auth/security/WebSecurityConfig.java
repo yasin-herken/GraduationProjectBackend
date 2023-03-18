@@ -63,11 +63,14 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/order/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
-                .antMatchers("/categories/**").permitAll()
+                .antMatchers("/api/categories/**").permitAll()
                 .antMatchers("/products/**").permitAll()
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/seller/**").permitAll()
+                .antMatchers("/api/customer/**").permitAll()
+
                 .antMatchers("/roles/**").permitAll()
                 .anyRequest().authenticated();
 

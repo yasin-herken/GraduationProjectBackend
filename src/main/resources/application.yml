@@ -20,7 +20,9 @@ spring:
     enabled: true
     change-log: "classpath:db/changelog/db.changelog-master.xml"
     contexts: "sql,data"
-
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
 ecommerce:
   app:
     jwtCookieName: graduationproject

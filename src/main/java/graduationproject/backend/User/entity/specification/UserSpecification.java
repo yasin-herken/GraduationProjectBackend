@@ -1,12 +1,8 @@
 package graduationproject.backend.User.entity.specification;
 
-import graduationproject.backend.User.entity.CustomUser;
-import graduationproject.backend.User.entity.CustomUser_;
 import graduationproject.backend.User.entity.Seller;
 import graduationproject.backend.User.entity.Seller_;
 import org.springframework.data.jpa.domain.Specification;
-
-import javax.persistence.criteria.JoinType;
 
 public class UserSpecification {
 

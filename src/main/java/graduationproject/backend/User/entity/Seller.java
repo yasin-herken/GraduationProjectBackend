@@ -1,13 +1,14 @@
 package graduationproject.backend.User.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import graduationproject.backend.Common.entity.AuditableDate;
+import graduationproject.backend.Order.entity.OrderDetails;
 import graduationproject.backend.Product.entity.Product;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,7 @@ public class Seller extends AuditableDate {
     @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "ID")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ToString.Exclude
     private CustomUser user;
 
     @Column(name = "company_name")
@@ -39,13 +41,15 @@ public class Seller extends AuditableDate {
     @Column(name = "phone")
     private String phone;
 
-    @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
-    )
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "seller_id")
+    @OneToMany
+    @ToString.Exclude
+    @JsonManagedReference
     private List<Product> products;
+
+    @OneToMany
+    @ToString.Exclude
+    @JsonManagedReference
+    private List<OrderDetails> orderDetails;
 
     public Seller(CustomUser user, String companyName, String address, String city, String phone) {
         this.user = user;

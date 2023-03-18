@@ -1,8 +1,12 @@
 package graduationproject.backend.Product.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import graduationproject.backend.Category.entity.Category;
 import graduationproject.backend.Common.entity.AuditableDate;
+import graduationproject.backend.Order.entity.OrderDetails;
+import graduationproject.backend.User.entity.Seller;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
@@ -10,11 +14,13 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "Product")
 @Getter
+@Builder
 @Setter
 @AllArgsConstructor
 public class Product extends AuditableDate {
@@ -32,16 +38,22 @@ public class Product extends AuditableDate {
     @Embedded
     private Price price;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private Gender gender;
+
     @OneToOne
     private Category category;
 
-    @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
-    )
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
+    @JsonBackReference
+    private Seller seller;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "product_id")
-    private Set<Img> images;
+    private Set<Img> images = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "color")
@@ -50,43 +62,31 @@ public class Product extends AuditableDate {
     @Column(name = "size")
     private ProductSize size;
 
-    @Column(name = "descriptipn")
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private OrderDetails orderDetails;
+
+    @Column(name = "description")
     private String description;
-
-    @OneToMany(
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            cascade = CascadeType.ALL
-    )
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "product_id")
-    private Set<ProductDetail> productDetails;
-
-    public Product(String title, Price price, Category category, Set<Img> images, String description, Set<ProductDetail> productDetails, ProductSize size, Color color) {
-        this.title = title;
-        this.color = color;
-        this.price = price;
-        this.category = category;
-        this.images = images;
-        this.description = description;
-        this.productDetails = productDetails;
-        this.stock = 0;
-        this.size = size;
-    }
 
     public Product() {
 
+    }
+
+    public void setImages(Set<Img> images) {
+        this.images.clear();
+        if (images != null) this.images.addAll(images);
     }
 
     public void update(Product product) {
         this.category = product.getCategory();
         this.images = product.getImages();
         this.description = product.getDescription();
-        this.productDetails = product.getProductDetails();
         this.title = product.getTitle();
         this.price = product.getPrice();
         this.color = product.getColor();
         this.size = product.getSize();
         this.stock = product.getStock();
+        this.gender = product.getGender();
     }
 }

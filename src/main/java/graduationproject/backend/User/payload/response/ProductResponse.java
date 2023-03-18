@@ -1,9 +1,7 @@
 package graduationproject.backend.User.payload.response;
 
 import graduationproject.backend.Category.entity.Category;
-import graduationproject.backend.Product.entity.Img;
-import graduationproject.backend.Product.entity.Price;
-import graduationproject.backend.Product.entity.ProductDetail;
+import graduationproject.backend.Product.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +20,8 @@ public class ProductResponse {
     private Category category;
     private Set<Img> images;
     private String description;
-    private Set<ProductDetail> productDetails;
     private Integer stock;
+    private Color color;
+    private ProductSize size;
+    private Gender gender;
 }

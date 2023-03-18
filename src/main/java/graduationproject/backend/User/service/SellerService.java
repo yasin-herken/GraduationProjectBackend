@@ -3,7 +3,9 @@ package graduationproject.backend.User.service;
 import graduationproject.backend.Admin.payload.request.SellerDTO;
 import graduationproject.backend.Category.entity.Category;
 import graduationproject.backend.Category.repository.CategoryRepository;
+import graduationproject.backend.Exception.controller.ResourceAlreadyExists;
 import graduationproject.backend.Exception.controller.ResourceNotFoundException;
+import graduationproject.backend.Order.entity.OrderDetails;
 import graduationproject.backend.Page.payload.response.PageResponse;
 import graduationproject.backend.Product.entity.Img;
 import graduationproject.backend.Product.entity.Product;
@@ -61,25 +63,29 @@ public class SellerService {
     public ResponseEntity<?> addNewProduct(ProductDTO product) {
 
         Seller seller = getSeller();
-        if (seller == null)
-            throw new UsernameNotFoundException("Seller not found");
+        if (seller == null) throw new UsernameNotFoundException("Seller not found");
 
-        seller.getProducts().stream().forEach(p -> {
+        seller.getProducts().forEach(p -> {
             if (p.getTitle().equals(product.getTitle())) {
-                throw new RuntimeException("Product already exists");
+                try {
+                    throw new ResourceAlreadyExists("Product already exists");
+                } catch (ResourceAlreadyExists e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
-        Category category = categoryRepository.findByName(product.getCategory().getName()).orElseThrow(
-                () -> new ResourceNotFoundException("Category not found with name: " + product.getCategory().getName())
-        );
+        Category category = categoryRepository.findByName(product.getCategory().getName()).orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + product.getCategory().getName()));
         Product newProduct = new Product();
         newProduct.setCategory(category);
-        newProduct.setProductDetails(product.getProductDetails());
         newProduct.setTitle(product.getTitle());
         newProduct.setPrice(product.getPrice());
         newProduct.setDescription(product.getDescription());
+        newProduct.setSize(product.getSize());
+        newProduct.setColor(product.getColor());
         newProduct.setStock(product.getStock());
+        newProduct.setGender(product.getGender());
+        newProduct.setSeller(seller);
         newProduct.setImages(product.getImages().stream().map(img -> {
             Img newImg = new Img();
             newImg.setUrl(img);
@@ -125,8 +131,7 @@ public class SellerService {
         for (Field f : field) {
             f.setAccessible(true);
             try {
-                if (f.get(sellerDTO) == null)
-                    continue;
+                if (f.get(sellerDTO) == null) continue;
                 Field field1 = seller.getClass().getDeclaredField(f.getName());
                 field1.setAccessible(true);
                 field1.set(seller, f.get(sellerDTO));
@@ -159,10 +164,64 @@ public class SellerService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Transactional
+    public ResponseEntity<?> getProduct(Long id) {
+        Seller seller = getSeller();
+        if (seller == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateProduct(Long id, ProductDTO productDTO) {
+        Seller seller = getSeller();
+        if (seller == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Product product = productRepository.findById(id).orElse(null);
+
+        if (product == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        product.setColor(productDTO.getColor());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setSize(productDTO.getSize());
+        product.setStock(productDTO.getStock());
+        product.setTitle(productDTO.getTitle());
+        product.setImages(productDTO.getImages().stream().map(img -> {
+            Img newImg = new Img();
+            newImg.setUrl(img);
+            return newImg;
+        }).collect(Collectors.toSet()));
+        Category category = categoryRepository.findByName(productDTO.getCategory().getName()).orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + productDTO.getCategory().getName()));
+        product.setCategory(category);
+        return new ResponseEntity<>(productRepository.save(product), HttpStatus.OK);
+    }
+
     private Seller getSeller() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userPrincipal = (UserDetailsImpl) auth.getPrincipal();
         return sellerRepository.findByUser_Id(userPrincipal.getId()).orElse(null);
     }
 
+    public PageResponse<OrderDetails> getOrders(Integer pageSize, String sortBy, String direction, Integer page) {
+        Seller seller = getSeller();
+        if (seller == null) {
+            return null;
+        }
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.ASC, sortBy));
+        int start = Math.min((int) pageable.getOffset(), seller.getOrderDetails().size());
+        int end = Math.min((start + pageable.getPageSize()), seller.getOrderDetails().size());
+        Page<OrderDetails> pageOrders = new PageImpl<>(seller.getOrderDetails().subList(start, end), pageable, seller.getOrderDetails().size());
+        PageResponse<OrderDetails> response = new PageResponse<>();
+        response.setData(pageOrders.getContent());
+        response.setTotalRecords(pageOrders.getTotalElements());
+        return response;
+    }
 }

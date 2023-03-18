@@ -1,13 +1,13 @@
 package graduationproject.backend.Product.payload.request;
 
 import graduationproject.backend.Category.entity.Category;
-import graduationproject.backend.Product.entity.Img;
+import graduationproject.backend.Product.entity.Color;
+import graduationproject.backend.Product.entity.Gender;
 import graduationproject.backend.Product.entity.Price;
-import graduationproject.backend.Product.entity.ProductDetail;
+import graduationproject.backend.Product.entity.ProductSize;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Embedded;
 import java.util.Set;
 
 @Getter
@@ -17,8 +17,10 @@ public class ProductDTO {
     private String title;
     private Price price;
     private Category category;
+    private Color color;
+    private ProductSize size;
     private Set<String> images;
     private String description;
-    private Set<ProductDetail> productDetails;
     private Integer stock;
+    private Gender gender;
 }

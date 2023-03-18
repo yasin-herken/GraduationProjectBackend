@@ -30,10 +30,29 @@ public class SellerController {
     ){
         return sellerService.getProducts(pageSize,sortBy,direction,page);
     }
-
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id){
         return sellerService.deleteProduct(id);
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<?> getProduct(@PathVariable Long id){
+        return sellerService.getProduct(id);
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductDTO product){
+        return sellerService.updateProduct(id,product);
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<?> getOrders(
+            @RequestParam(defaultValue = "5") Integer pageSize,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "ASC") String direction,
+            @RequestParam(defaultValue = "0") Integer page
+    ){
+        return ResponseEntity.ok(sellerService.getOrders(pageSize,sortBy,direction,page));
     }
 
 }

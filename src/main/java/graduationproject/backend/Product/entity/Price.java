@@ -13,8 +13,6 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Price {
-
     private String price;
     private String currency;
-
 }
