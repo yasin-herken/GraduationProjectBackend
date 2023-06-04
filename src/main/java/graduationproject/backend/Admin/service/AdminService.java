@@ -3,10 +3,12 @@ package graduationproject.backend.Admin.service;
 import graduationproject.backend.Admin.payload.request.SellerDTO;
 import graduationproject.backend.Exception.controller.ResourceNotFoundException;
 import graduationproject.backend.Page.payload.response.PageResponse;
+import graduationproject.backend.User.entity.CustomUser;
 import graduationproject.backend.User.entity.Seller;
 import graduationproject.backend.User.mapper.SellerMapper;
 import graduationproject.backend.User.payload.response.UsersResponse;
 import graduationproject.backend.User.repository.SellerRepository;
+import graduationproject.backend.User.repository.UserRepository;
 import graduationproject.backend.User.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,8 @@ public class AdminService {
     private final SellerService sellerService;
     @Autowired
     private final SellerRepository sellerRepository;
+    @Autowired
+    private final UserRepository userRepository;
 
     public ResponseEntity<?> createSeller(SellerDTO user) throws ResourceNotFoundException {
         Seller sellerDb = sellerService.createSeller(user);
@@ -52,12 +57,17 @@ public class AdminService {
         return ResponseEntity.ok(sellerDTOResponse);
     }
 
+    @Transactional
     public ResponseEntity<?> deleteSeller(Long id) throws ResourceNotFoundException {
         Seller seller = sellerRepository.findById(id).orElse(null);
-        if (seller == null) {
+        assert seller != null;
+        CustomUser customUser = userRepository.findById(seller.getUser().getId()).orElse(null);
+        if (customUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         sellerRepository.delete(seller);
+        userRepository.delete(customUser);
+
         return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
     }
 

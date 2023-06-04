@@ -1,9 +1,6 @@
 package graduationproject.backend.Product.entity.specification;
 
-import graduationproject.backend.Product.entity.Color;
-import graduationproject.backend.Product.entity.Product;
-import graduationproject.backend.Product.entity.ProductSize;
-import graduationproject.backend.Product.entity.Product_;
+import graduationproject.backend.Product.entity.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Predicate;
@@ -35,15 +32,17 @@ public class ProductSpecification {
                         } else if (key.toString().equals("title")) {
                             predicateList.add(cb.equal(root.get(Product_.TITLE), eq.get(key)));
                         } else if (key.toString().equals("size")) {
-                            if (eq.get(key).toString().equals("[]")) {
+                             if (eq.get(key).toString().equals("[]")) {
                                 return cb.conjunction();
                             }
                             List<String> productSizes = Arrays.asList(eq.get(key).toString().replaceAll("\\[", "").replaceAll("]", "").split(","));
 
                             List<ProductSize> productSizes1 = productSizes.stream().map(size -> size.trim()).map(ProductSize::valueOf).collect(Collectors.toList());
                             predicateList.add(cb.and(root.get(Product_.SIZE).in(productSizes1)));
-                        } else if (key.toString().equalsIgnoreCase("women") || key.toString().equalsIgnoreCase("man") || key.toString().equalsIgnoreCase("unisex")) {
-                            predicateList.add(cb.equal(root.get(Product_.GENDER), eq.get(key)));
+                        } else if (key.toString().equals("gender")) {
+                            predicateList.add(cb.equal(root.get(Product_.GENDER), Gender.valueOf(eq.get(key).toString())));
+                        } else if(key.toString().equals("search")){
+                            predicateList.add(cb.like(root.get(Product_.TITLE),"%" + eq.get(key).toString() + "%"));
                         }
 
                     }

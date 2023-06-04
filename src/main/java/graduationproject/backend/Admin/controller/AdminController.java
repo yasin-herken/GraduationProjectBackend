@@ -25,7 +25,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/sellers/{id}")
-    public ResponseEntity<?> deleteSeller(@PathVariable Long id) throws Exception {
+    public ResponseEntity<?> deleteSeller(@PathVariable Long id) {
         return adminService.deleteSeller(id);
     }
     @GetMapping("/users")

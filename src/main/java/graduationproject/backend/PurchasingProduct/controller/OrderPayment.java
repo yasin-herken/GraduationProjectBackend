@@ -60,8 +60,8 @@ public class OrderPayment {
             return null;
         }).toList();
         ordersToSave.setOrderDetails(orderDetailsList);
-        Orders savedOrder = orderRepository.save(ordersToSave);
-        return ResponseEntity.ok(savedOrder);
+       // Orders savedOrder = orderRepository.save(ordersToSave);
+        return ResponseEntity.ok(ordersToSave);
     }
 
     @PutMapping("/{id}")

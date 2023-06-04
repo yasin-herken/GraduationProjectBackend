@@ -6,6 +6,8 @@ import graduationproject.backend.Common.entity.AuditableDate;
 import graduationproject.backend.Order.entity.OrderDetails;
 import graduationproject.backend.Product.entity.Product;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -23,10 +25,11 @@ public class Seller extends AuditableDate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+
+    @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "ID")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ToString.Exclude
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private CustomUser user;
 
     @Column(name = "company_name")
@@ -46,7 +49,7 @@ public class Seller extends AuditableDate {
     @JsonManagedReference
     private List<Product> products;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @ToString.Exclude
     @JsonManagedReference
     private List<OrderDetails> orderDetails;

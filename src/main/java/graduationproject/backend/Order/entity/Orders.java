@@ -26,9 +26,10 @@ public class Orders extends AuditableDate {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<OrderDetails> orderDetails = new ArrayList<>();
+
     private Double totalAmount;
     public void addOrderDetails(OrderDetails orderDetails) {
         this.orderDetails.add(orderDetails);

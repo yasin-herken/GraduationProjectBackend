@@ -20,7 +20,7 @@ public class OrderDetails extends AuditableDate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderDetailsNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     @JsonBackReference
     private Orders orders;

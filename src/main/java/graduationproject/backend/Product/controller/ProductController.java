@@ -21,12 +21,11 @@ public class ProductController {
         return productService.getProducts(pageRequestDTO);
     }
 
-    @GetMapping("/{categories}/{id}")
-    public ResponseEntity<?> getProductByCategory(
-            @RequestParam(defaultValue = "Shoes") String category,
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProductById(
             @PathVariable Long id
     ) {
-        return productService.getProduct(category, id);
+        return productService.getProduct(id);
     }
 
     @PutMapping("/{id}")

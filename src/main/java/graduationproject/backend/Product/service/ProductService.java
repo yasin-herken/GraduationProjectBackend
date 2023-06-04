@@ -53,11 +53,8 @@ public class ProductService {
         return ResponseEntity.ok(pageResponse);
     }
 
-    public ResponseEntity<?> getProduct(String category, Long productId) {
-        Category categoryDb = categoryRepository.findByName(category).orElseThrow(
-                () -> new ResourceNotFoundException("Category not found")
-        );
-        Optional<Product> product = productRepository.findByIdAndCategory(productId, categoryDb);
+    public ResponseEntity<?> getProduct(Long productId) {
+        Optional<Product> product = productRepository.findById(productId);
         if (product.isPresent()) {
             ProductResponse productResponse = new ProductResponse();
             productResponse.setId(product.get().getId());
